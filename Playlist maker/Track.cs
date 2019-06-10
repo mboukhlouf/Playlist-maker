@@ -12,6 +12,18 @@ namespace Playlist_maker
         public String Artist { get; set; }
         public String Album { get; set; }
 
+        public Track()
+        {
+
+        }
+
+        public Track(String Title, String Artist, String Album)
+        {
+            this.Title = Title;
+            this.Artist = Artist;
+            this.Album = Album;
+        }
+
         public override String ToString()
         {
             return $"{Artist} - {Album} - {Title}";

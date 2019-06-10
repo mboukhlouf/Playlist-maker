@@ -8,9 +8,10 @@ namespace Playlist_maker
     {
         static void Main(string[] args)
         {
-            String PlaylistName = "This is Green Day";
-            Track[] playlist = Spotify.GetPlaylist("37i9dQZF1DWVPJN9etkrEa");
-            String path = @"D:\Music\Green Day"; 
+            String PlaylistName = "90s Rock Anthems";
+            //Track[] playlist = Spotify.GetPlaylist("37i9dQZF1DX1rVvRgjX59F");
+            Track[] playlist = LoadTracksFromFile("90s Rock Anthems.txt");
+            String path = @"D:\Music"; 
             String playlistFile = ""; 
 
             foreach (Track track in playlist)
@@ -39,7 +40,9 @@ namespace Playlist_maker
                     TagLib.File Song = TagLib.File.Create(file);
                     bool flag1 = String.Compare(Simplify(Song.Tag.Title), track.Title, true) == 0;
                     bool flag2 = String.Compare(Simplify(Song.Tag.Album), track.Album, true) == 0;
-                    flag2 = true;
+                    // 
+                    // flag2 = true;
+                    //
                     if (flag1 && flag2)
                     {
                         return file;
@@ -58,6 +61,13 @@ namespace Playlist_maker
             {
                 String[] tokens = directory.Split('\\');
                 String folderName = tokens[tokens.Length - 1];
+                if (Simplify(folderName) == track.Album)
+                {
+                    found = true;
+                    String song = FindSong(directory, track);
+                    if (song != "")
+                        return song;
+                }
                 if (Simplify(folderName) == track.Artist)
                 {
                     found = true;
@@ -92,6 +102,28 @@ namespace Playlist_maker
             newStr = newStr.Replace("Remaster", "");
             newStr = newStr.Replace("Version", "");
             return newStr.Trim();
+        }
+
+        private static Track ParseTrack(String text)
+        {
+            String[] tokens = text.Split('|');
+            String title = tokens[0];
+            String artist = tokens[1];
+            String album = tokens[2];
+
+            return new Track(title, artist, album);
+        }
+
+        private static Track[] LoadTracksFromFile(String path)
+        {
+            String[] lines = File.ReadAllLines(path);
+            Track[] tracks = new Track[lines.Length];
+
+            for(int i = 0; i < lines.Length; i++)
+            {
+                tracks[i] = ParseTrack(lines[i]);
+            }
+            return tracks;
         }
     }
 }
